@@ -64,7 +64,7 @@ const EditForm = (props) => {
       });
 
       dispatch(update(tempData))
-      props.resetRowSelection()
+      cleanInput()
     } else {
       toast.error("Corrige los errores antes de enviar el formulario", {
         position: "bottom-right",
@@ -74,11 +74,12 @@ const EditForm = (props) => {
   
   const cleanInput = () => {
     setTempData(null);
+    props.resetRowSelection()
   };
 
   const deleteClient = () => {
     dispatch(deleteUser(tempData.id));
-    props.resetRowSelection()
+    cleanInput()
 
   };
 
@@ -89,7 +90,7 @@ const EditForm = (props) => {
       });
 
       dispatch(createClient(tempData));
-      props.resetRowSelection()
+      cleanInput()
     } else {
       toast.error("Corrige los errores antes de enviar el formulario", {
         position: "bottom-right",
