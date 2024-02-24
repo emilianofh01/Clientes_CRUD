@@ -1,15 +1,12 @@
 import { Button, Container, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { createClient, deleteUser } from "../services/clientServices";
+import { createClient, deleteUser, updateClient as update } from "../services/clientServices";
 import { useDispatch } from "react-redux";
 
 const EditForm = (props) => {
   const dispatch = useDispatch();
-  const [tempData, setTempData] = useState({
-    name: "",
-    email: "",
-  });
+  const [tempData, setTempData] = useState(null);
 
   const [errors, setErrors] = useState({
     name: "",
@@ -60,12 +57,29 @@ const EditForm = (props) => {
     setErrors({ ...errors, email: "" });
   };
 
-  const deleteClient = () => {
-    dispatch(deleteUser(tempData.id));
-  };
+  const updateClient = () => {
+    if (validateForm()) {
+      toast("Actualizando cliente", {
+        position: "bottom-right",
+      });
 
+      dispatch(update(tempData))
+      props.resetRowSelection()
+    } else {
+      toast.error("Corrige los errores antes de enviar el formulario", {
+        position: "bottom-right",
+      });
+    }
+  }
+  
   const cleanInput = () => {
     setTempData(null);
+  };
+
+  const deleteClient = () => {
+    dispatch(deleteUser(tempData.id));
+    props.resetRowSelection()
+
   };
 
   const postClient = () => {
@@ -75,7 +89,7 @@ const EditForm = (props) => {
       });
 
       dispatch(createClient(tempData));
-      cleanInput();
+      props.resetRowSelection()
     } else {
       toast.error("Corrige los errores antes de enviar el formulario", {
         position: "bottom-right",
@@ -146,6 +160,7 @@ const EditForm = (props) => {
               variant="contained"
               size="large"
               style={{ marginLeft: 16, background: "#219de2", color: "white" }}
+              onClick={updateClient}
             >
               Actualizar
             </Button>

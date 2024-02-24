@@ -44,19 +44,21 @@ function App() {
     },
   });
 
+  const resetRowSelection = () => {
+    setRowSelection(null)
+  }
+
   const onSelectRow = (e) => {
     setRowSelection(e);
   };
 
   const filterData = () => {
-    console.log(clients);
     const data =
       clients.filter(
         (user) =>
           user.name.toLowerCase().includes(filterValue.toLowerCase()) ||
           user.email.toLowerCase().includes(filterValue.toLowerCase())
       ) || clients;
-    console.log(data);
     return data;
   };
 
@@ -85,7 +87,7 @@ function App() {
           }}
           maxWidth={false}
         >
-          <EditForm data={rowSelection}></EditForm>
+          <EditForm resetRowSelection={resetRowSelection} data={rowSelection}></EditForm>
           <DataGrid
             rows={filterData()}
             columns={columns}

@@ -35,3 +35,16 @@ export const createClient = createAsyncThunk('createClient', async (userData) =>
   return data;
 }) 
 
+export const updateClient = createAsyncThunk('updateClient', async (userData) => {
+  console.log(userData);
+  const data = await fetchData(`/users/${userData.id}`, {
+    method: "PUT",
+    body: JSON.stringify(userData),
+    headers: {
+      'Content-Type': 'application/json',
+    } 
+  })
+
+  return data;
+}) 
+

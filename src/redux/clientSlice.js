@@ -3,6 +3,7 @@ import {
   createClient,
   deleteUser,
   getAllUsers,
+  updateClient,
 } from "../services/clientServices";
 import { createSlice } from "@reduxjs/toolkit";
 
@@ -26,13 +27,13 @@ export const clientSlice = createSlice({
           toast.error(errors.message, {
             position: "bottom-right",
           });
+          return state;
         }
       })
 
       .addCase(deleteUser.fulfilled, (state, action) => {
         const response = action.payload.data;
 
-        console.log(response);
         if (response.success) {
           toast.success("Cliente eliminado", {
             position: "bottom-right",
@@ -54,6 +55,28 @@ export const clientSlice = createSlice({
         // Obtener todos los usuarios
         const { data } = action.payload;
         return data;
+      })
+
+      // Metodo POST
+      .addCase(updateClient.fulfilled, (state, action) => {
+        const response = action.payload;
+
+        if (response.success) {
+          toast.success("Cliente Actualizado", {
+            position: "bottom-right",
+          });
+
+          const updatedClient = response.data;
+
+          let newSt = state.map((client) => client.id === updatedClient.id ? updatedClient : client);
+
+          return newSt;
+        } else {
+          toast.error(response.errors.message, {
+            position: "bottom-right",
+          });
+          return state;
+        }
       });
   },
 });
