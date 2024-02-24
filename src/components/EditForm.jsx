@@ -1,7 +1,11 @@
-import { Button, Container, TextField } from "@mui/material";
+import { Button, Container, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { createClient, deleteUser, updateClient as update } from "../services/clientServices";
+import {
+  createClient,
+  deleteUser,
+  updateClient as update,
+} from "../services/clientServices";
 import { useDispatch } from "react-redux";
 
 const EditForm = (props) => {
@@ -63,24 +67,23 @@ const EditForm = (props) => {
         position: "bottom-right",
       });
 
-      dispatch(update(tempData))
-      cleanInput()
+      dispatch(update(tempData));
+      cleanInput();
     } else {
       toast.error("Corrige los errores antes de enviar el formulario", {
         position: "bottom-right",
       });
     }
-  }
-  
+  };
+
   const cleanInput = () => {
     setTempData(null);
-    props.resetRowSelection()
+    props.resetRowSelection();
   };
 
   const deleteClient = () => {
     dispatch(deleteUser(tempData.id));
-    cleanInput()
-
+    cleanInput();
   };
 
   const postClient = () => {
@@ -90,7 +93,7 @@ const EditForm = (props) => {
       });
 
       dispatch(createClient(tempData));
-      cleanInput()
+      cleanInput();
     } else {
       toast.error("Corrige los errores antes de enviar el formulario", {
         position: "bottom-right",
@@ -100,86 +103,114 @@ const EditForm = (props) => {
 
   return (
     <Container
-      maxWidth={false}
       style={{
-        background: "#272727",
-        paddingBlock: 20,
-        borderRadius: 10,
         display: "flex",
-        justifyContent: "space-between",
-        position: "sticky",
-        top: 100,
-        zIndex: 99,
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
       <Container
+        maxWidth={false}
         style={{
+          background: "#272727",
+          paddingBlock: 20,
+          borderRadius: 10,
           display: "flex",
-          gap: 20,
+          justifyContent: "space-between",
+          position: "sticky",
+          top: 100,
+          zIndex: 99,
         }}
       >
-        <TextField
-          fullWidth={true}
-          value={tempData?.name ?? ""}
-          id="outlined-basic"
-          label="Nombre"
-          variant="outlined"
-          onChange={changeName}
-          error={Boolean(errors.name)}
-          helperText={errors.name}
-        />
-        <TextField
-          fullWidth={true}
-          value={tempData?.email ?? ""}
-          id="outlined-basic"
-          label="Correo"
-          variant="outlined"
-          onChange={changeEmail}
-          error={Boolean(errors.email)}
-          helperText={errors.email}
-        />
-      </Container>
-      <Container
-        style={{
-          display: "flex",
-          justifyContent: "right",
-        }}
-      >
-        {props.data && (
-          <>
+        <Container
+          style={{
+            display: "flex",
+            gap: 20,
+          }}
+        >
+          <TextField
+            fullWidth={true}
+            value={tempData?.name ?? ""}
+            id="outlined-basic"
+            label="Nombre"
+            variant="outlined"
+            onChange={changeName}
+            error={Boolean(errors.name)}
+            helperText={errors.name}
+          />
+          <TextField
+            fullWidth={true}
+            value={tempData?.email ?? ""}
+            id="outlined-basic"
+            label="Correo"
+            variant="outlined"
+            onChange={changeEmail}
+            error={Boolean(errors.email)}
+            helperText={errors.email}
+          />
+        </Container>
+        <Container
+          style={{
+            display: "flex",
+            justifyContent: "right",
+          }}
+        >
+          {props.data && (
+            <>
+              <Button
+                fullWidth
+                variant="contained"
+                size="large"
+                style={{
+                  marginLeft: 16,
+                  background: "#cc0000",
+                  color: "white",
+                }}
+                onClick={deleteClient}
+              >
+                Borrar
+              </Button>
+              <Button
+                fullWidth
+                variant="contained"
+                size="large"
+                style={{
+                  marginLeft: 16,
+                  background: "#219de2",
+                  color: "white",
+                }}
+                onClick={updateClient}
+              >
+                Actualizar
+              </Button>
+            </>
+          )}
+
+          {!props.data && (
             <Button
-              fullWidth
-              variant="contained"
-              size="large"
-              style={{ marginLeft: 16, background: "#cc0000", color: "white" }}
-              onClick={deleteClient}
-            >
-              Borrar
-            </Button>
-            <Button
+              onClick={postClient}
               fullWidth
               variant="contained"
               size="large"
               style={{ marginLeft: 16, background: "#219de2", color: "white" }}
-              onClick={updateClient}
             >
-              Actualizar
+              Crear
             </Button>
-          </>
-        )}
-
-        {!props.data && (
-          <Button
-            onClick={postClient}
-            fullWidth
-            variant="contained"
-            size="large"
-            style={{ marginLeft: 16, background: "#219de2", color: "white" }}
-          >
-            Crear
-          </Button>
-        )}
+          )}
+        </Container>
       </Container>
+      <Typography style={{ color: "white" }}>
+        Api:
+        <a
+          target="_blank"
+          style={{ color: "white" }}
+          href="https://github.com/emilianofh01/api_Clients"
+        >
+          {" "}
+          https://github.com/emilianofh01/api_Clients
+        </a>
+      </Typography>
     </Container>
   );
 };
