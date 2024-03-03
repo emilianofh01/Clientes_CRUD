@@ -1,3 +1,4 @@
+import styles from "../assets/CSS/EditForm.module.css";
 import { Button, Container, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -7,10 +8,15 @@ import {
   updateClient as update,
 } from "../services/clientServices";
 import { useDispatch } from "react-redux";
+import AngleDown from "../assets/IMG/Icons/angle-down";
 
 const EditForm = (props) => {
   const dispatch = useDispatch();
-  const [tempData, setTempData] = useState(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [tempData, setTempData] = useState({
+    name: "",
+    email: "",
+  });
 
   const [errors, setErrors] = useState({
     name: "",
@@ -20,27 +26,36 @@ const EditForm = (props) => {
   useEffect(() => {
     if (props.data) {
       setTempData(props.data.row);
+      setIsVisible(true);
     }
   }, [props.data]);
 
-  const validateForm = () => {
-    let valid = true;
+  const validateForm = (func) => {
+    // Desestructuración de tempData
+    const { name, email } = tempData;
+
+    // Validar si el nombre y el correo cumplen con el formato.
+    const nameIsValid = name.trim();
+    const emailIsValid = email.match(
+      /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
+    );
+
+    // Asignar errores
     const newErrors = { name: "", email: "" };
-
-    if (tempData.name.trim() === "") {
-      newErrors.name = "El nombre no puede estar vacío";
-      valid = false;
-    }
-    if (
-      tempData.email.trim() === "" ||
-      !tempData.email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/)
-    ) {
-      newErrors.email = "El correo no puede estar vacío";
-      valid = false;
-    }
-
+    newErrors.name = nameIsValid ? "" : "El nombre no puede estar vacío";
+    newErrors.email = emailIsValid ? "" : "El correo electrónico no es válido";
     setErrors(newErrors);
-    return valid;
+
+    // Mostrar mensaje de error y retornar si hay errores
+    if (!nameIsValid || !emailIsValid) {
+      toast.error("Corrige los errores antes de enviar el formulario", {
+        position: "bottom-right",
+      });
+      return;
+    }
+
+    // Ejecutar la función proporcionada
+    func();
   };
 
   const changeName = (e) => {
@@ -61,24 +76,21 @@ const EditForm = (props) => {
     setErrors({ ...errors, email: "" });
   };
 
-  const updateClient = () => {
-    if (validateForm()) {
-      toast("Actualizando cliente", {
-        position: "bottom-right",
-      });
-
-      dispatch(update(tempData));
-      cleanInput();
-    } else {
-      toast.error("Corrige los errores antes de enviar el formulario", {
-        position: "bottom-right",
-      });
-    }
-  };
-
   const cleanInput = () => {
     setTempData(null);
     props.resetRowSelection();
+  };
+
+  const toggleVisibility = () => {
+    cleanInput();
+    setIsVisible(!isVisible);
+  };
+
+  const updateClient = () => {
+    validateForm(() => {
+      dispatch(update(tempData));
+      cleanInput();
+    });
   };
 
   const deleteClient = () => {
@@ -87,131 +99,91 @@ const EditForm = (props) => {
   };
 
   const postClient = () => {
-    if (validateForm()) {
-      toast("Agregando cliente", {
-        position: "bottom-right",
-      });
-
+    validateForm(() => {
       dispatch(createClient(tempData));
       cleanInput();
-    } else {
-      toast.error("Corrige los errores antes de enviar el formulario", {
-        position: "bottom-right",
-      });
-    }
+    });
   };
 
   return (
-    <Container
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
+    <div
+      className={`${styles.container} ${
+        (props.data || isVisible) && styles.isVisible
+      }`}
     >
-      <Container
-        maxWidth={false}
-        style={{
-          background: "#272727",
-          paddingBlock: 20,
-          borderRadius: 10,
-          display: "flex",
-          justifyContent: "space-between",
-          position: "sticky",
-          top: 100,
-          zIndex: 99,
-        }}
-      >
-        <Container
-          style={{
-            display: "flex",
-            gap: 20,
-          }}
-        >
-          <TextField
-            fullWidth={true}
-            value={tempData?.name ?? ""}
-            id="outlined-basic"
-            label="Nombre"
-            variant="outlined"
-            onChange={changeName}
-            error={Boolean(errors.name)}
-            helperText={errors.name}
-          />
-          <TextField
-            fullWidth={true}
-            value={tempData?.email ?? ""}
-            id="outlined-basic"
-            label="Correo"
-            variant="outlined"
-            onChange={changeEmail}
-            error={Boolean(errors.email)}
-            helperText={errors.email}
-          />
-        </Container>
-        <Container
-          style={{
-            display: "flex",
-            justifyContent: "right",
-          }}
-        >
-          {props.data && (
-            <>
-              <Button
-                fullWidth
-                variant="contained"
-                size="large"
-                style={{
-                  marginLeft: 16,
-                  background: "#cc0000",
-                  color: "white",
-                }}
-                onClick={deleteClient}
-              >
-                Borrar
-              </Button>
-              <Button
-                fullWidth
-                variant="contained"
-                size="large"
-                style={{
-                  marginLeft: 16,
-                  background: "#219de2",
-                  color: "white",
-                }}
-                onClick={updateClient}
-              >
-                Actualizar
-              </Button>
-            </>
-          )}
+      <div className={[styles.form_wrapper]}>
+        <div className={[styles.form]}>
+          <div className={[styles.textfield_container]}>
+            <TextField
+              fullWidth={true}
+              value={tempData?.name ?? ""}
+              id="outlined-basic"
+              label="Nombre"
+              variant="outlined"
+              onChange={changeName}
+              error={Boolean(errors.name)}
+              helperText={errors.name}
+            />
+            <TextField
+              fullWidth={true}
+              value={tempData?.email ?? ""}
+              id="outlined-basic"
+              label="Correo"
+              variant="outlined"
+              onChange={changeEmail}
+              error={Boolean(errors.email)}
+              helperText={errors.email}
+            />
+          </div>
+          <div className={[styles.btns_container]}>
+            {props.data && (
+              <>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  id={styles.deleteBtn}
+                  // className={[styles.btns]}
+                  className={styles.btns}
+                  onClick={deleteClient}
+                >
+                  Borrar
+                </Button>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  id={styles.updateBtn}
+                  className={styles.btns}
+                  onClick={updateClient}
+                >
+                  Actualizar
+                </Button>
+              </>
+            )}
 
-          {!props.data && (
-            <Button
-              onClick={postClient}
-              fullWidth
-              variant="contained"
-              size="large"
-              style={{ marginLeft: 16, background: "#219de2", color: "white" }}
-            >
-              Crear
-            </Button>
-          )}
-        </Container>
-      </Container>
-      <Typography style={{ color: "white" }}>
-        Api:
-        <a
-          target="_blank"
-          style={{ color: "white" }}
-          href="https://github.com/emilianofh01/api_Clients"
-        >
-          {" "}
-          https://github.com/emilianofh01/api_Clients
-        </a>
-      </Typography>
-    </Container>
+            {!props.data && (
+              <Button
+                onClick={postClient}
+                fullWidth
+                variant="contained"
+                size="large"
+                className={styles.btns}
+                id={styles.createBtn}
+              >
+                Crear
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className={[styles.toggle_container]}>
+        <div onClick={toggleVisibility}>
+          <AngleDown style={styles.toggle} />
+        </div>
+      </div>
+    </div>
   );
 };
 

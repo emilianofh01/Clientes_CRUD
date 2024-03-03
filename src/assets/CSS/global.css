@@ -1,0 +1,11 @@
+:root {
+  --bg-color: #1b1b1b;
+  --primary-color: #219de2;
+  --secondary-color: #cc0000;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}

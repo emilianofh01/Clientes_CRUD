@@ -1,4 +1,3 @@
-import { toast } from "react-toastify";
 import {
   createClient,
   deleteUser,
@@ -6,6 +5,7 @@ import {
   updateClient,
 } from "../services/clientServices";
 import { createSlice } from "@reduxjs/toolkit";
+import { hideLoadingToast, showToast } from "../services/toastService";
 
 const initialState = [];
 
@@ -13,70 +13,119 @@ export const clientSlice = createSlice({
   name: "clients",
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
+  extraReducers: async (builder) => {
+    // Crear cliente
     builder
+      .addCase(createClient.pending, (state, action) => {
+        hideLoadingToast();
+
+        showToast({
+          message: "Agregando cliente...",
+          options: { position: "bottom-right", type: "loading" },
+        });
+      })
+      .addCase(createClient.rejected, (state, action) => {
+        showToast({
+          options: {
+            position: "bottom-right",
+            type: "error",
+            isLoading: false,
+            render: action.payload.message,
+          },
+        });
+      })
       .addCase(createClient.fulfilled, (state, action) => {
-        const { success, errors, data } = action.payload;
-
-        if (success) {
-          toast.success("Cliente agregado", {
+        const { data } = action.payload;
+        showToast({
+          options: {
             position: "bottom-right",
-          });
-          return [...state, data];
-        } else {
-          toast.error(errors.message, {
-            position: "bottom-right",
-          });
-          return state;
-        }
+            type: "success",
+            render: "¡Cliente agregado!",
+          },
+        });
+        return [...state, data];
       })
 
+      // Borrar cliente
+      .addCase(deleteUser.pending, (state, action) => {
+        hideLoadingToast();
+
+        showToast({
+          message: "Borrando cliente...",
+          options: { position: "bottom-right", type: "loading" },
+        });
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        showToast({
+          options: {
+            position: "bottom-right",
+            type: "error",
+            isLoading: false,
+            render: action.payload.message,
+          },
+        });
+      })
       .addCase(deleteUser.fulfilled, (state, action) => {
-        const response = action.payload.data;
-
-        if (response.success) {
-          toast.success("Cliente eliminado", {
+        showToast({
+          message: "Cliente eliminado",
+          options: {
             position: "bottom-right",
-          });
+            type: "success",
+            render: "¡Cliente eliminado!",
+          },
+        });
 
-          const newState = [...state].filter((e) => e.id !== action.payload.id);
-          return newState;
-        } else {
-          toast.error(response.errors.message, {
-            position: "bottom-right",
-          });
-        }
-
-        return state;
+        const newState = [...state].filter((e) => e.id !== action.payload.id);
+        return newState;
       })
 
-      // Metodos GET
+      // Obtener cliente
+      .addCase(getAllUsers.pending, (state, action) => {
+      })
+      .addCase(getAllUsers.rejected, (state, action) => {
+      })
       .addCase(getAllUsers.fulfilled, (state, action) => {
         // Obtener todos los usuarios
         const { data } = action.payload;
         return data;
       })
 
-      // Metodo POST
+      // Actualizar cliente
+      .addCase(updateClient.pending, (state, action) => {
+        hideLoadingToast();
+        showToast({
+          message: "Actualizando datos del cliente",
+          options: { position: "bottom-right", type: "loading" },
+        });
+      })
+      
+      .addCase(updateClient.rejected, (state, action) => {
+        showToast({
+          options: {
+            position: "bottom-right",
+            type: "error",
+            isLoading: false,
+            render: action.payload.message,
+          },
+        });
+      })
+
       .addCase(updateClient.fulfilled, (state, action) => {
         const response = action.payload;
 
-        if (response.success) {
-          toast.success("Cliente Actualizado", {
+        const updatedClient = response.data;
+        let newSt = state.map((client) =>
+          client.id === updatedClient.id ? updatedClient : client
+        );
+
+        showToast({
+          options: {
             position: "bottom-right",
-          });
-
-          const updatedClient = response.data;
-
-          let newSt = state.map((client) => client.id === updatedClient.id ? updatedClient : client);
-
-          return newSt;
-        } else {
-          toast.error(response.errors.message, {
-            position: "bottom-right",
-          });
-          return state;
-        }
+            type: "success",
+            render: "Cliente actualizado",
+          },
+        });
+        return newSt;
       });
   },
 });
