@@ -40,6 +40,7 @@ export const clientSlice = createSlice({
           options: {
             position: "bottom-right",
             type: "success",
+            isLoading: false,
             render: "¡Cliente agregado!",
           },
         });
@@ -71,6 +72,7 @@ export const clientSlice = createSlice({
           options: {
             position: "bottom-right",
             type: "success",
+            isLoading: false,
             render: "¡Cliente eliminado!",
           },
         });
@@ -122,6 +124,7 @@ export const clientSlice = createSlice({
           options: {
             position: "bottom-right",
             type: "success",
+            isLoading: false,
             render: "Cliente actualizado",
           },
         });

@@ -12,7 +12,7 @@ let loadingToastId;
 const showToast = ({message, options}) => {
   if (loadingToastId) {
     setTimeout(() => {
-        toast.update(loadingToastId, options)
+        toast.update(loadingToastId, {...options, autoClose: true})
     }, 3000);    
   } else {
     loadingToastId = toastType[options.type](message, options);

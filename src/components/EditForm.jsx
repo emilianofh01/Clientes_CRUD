@@ -1,5 +1,11 @@
 import styles from "../assets/CSS/EditForm.module.css";
-import { Button, Container, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  Container,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -12,7 +18,7 @@ import AngleDown from "../assets/IMG/Icons/angle-down";
 
 const EditForm = (props) => {
   const dispatch = useDispatch();
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [tempData, setTempData] = useState({
     name: "",
     email: "",
@@ -179,9 +185,15 @@ const EditForm = (props) => {
       </div>
 
       <div className={[styles.toggle_container]}>
-        <div onClick={toggleVisibility}>
-          <AngleDown style={styles.toggle} />
-        </div>
+        <Tooltip
+          title={
+            props.data || isVisible ? "Cerrar formulario" : "Abrir formulario"
+          }
+        >
+          <div onClick={toggleVisibility}>
+            <AngleDown style={styles.toggle} />
+          </div>
+        </Tooltip>
       </div>
     </div>
   );

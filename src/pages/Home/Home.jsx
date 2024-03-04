@@ -7,6 +7,7 @@ import styles from './main.module.css'
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { getAllUsers } from "../../services/clientServices";
+import { ToastContainer } from "react-toastify";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -72,6 +73,7 @@ const Home = () => {
           onRowClick={onSelectRow}
         />
       </Container>
+      <ToastContainer/>
     </div>
   );
 };
